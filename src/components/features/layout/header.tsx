@@ -1,78 +1,91 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { UserNav } from "./user-nav"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+} from "@/components/ui/navigation-menu";
+import { UserNav } from "./user-nav";
 
 const navItems = [
-  { name: "Properties", href: "/properties" },
-  { name: "Agents", href: "/agents" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-]
+  { name: "Hogar", href: "/" },
+  { name: "Propiedades", href: "/properties" },
+  { name: "Acerca de", href: "/about" },
+];
 
 interface HeaderProps {
-  user?: any // Type as Supabase user or specific user interface
+  user: any; 
 }
 
 export function Header({ user }: HeaderProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  // Evita errores de hidratación y el fallo de 'removeChild'
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Renderizado inicial simplificado para sincronizar servidor y cliente
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="font-serif text-2xl font-bold">LUJO</div>
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="font-serif text-2xl font-semibold tracking-widest uppercase">
-            Luxe
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="font-serif text-2xl font-bold">
+            LUJO
+          </Link>
 
-        <nav className="hidden md:flex">
           <NavigationMenu>
-            <NavigationMenuList className="space-x-2">
+            <NavigationMenuList>
               {navItems.map((item) => (
                 <NavigationMenuItem key={item.name}>
-                  <Link href={item.href} legacyBehavior passHref>
-                    <NavigationMenuLink
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={item.href}
                       className={cn(
                         navigationMenuTriggerStyle(),
-                        "bg-transparent font-sans text-sm tracking-widest uppercase hover:bg-transparent hover:text-accent transition-colors",
-                        pathname === item.href && "text-accent"
+                        "bg-transparent font-sans text-sm tracking-widest uppercase hover:bg-transparent transition-colors",
+                        pathname === item.href ? "text-accent font-bold" : "text-muted-foreground hover:text-primary"
                       )}
                     >
                       {item.name}
-                    </NavigationMenuLink>
-                  </Link>
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
           </NavigationMenu>
-        </nav>
+        </div>
 
         <div className="flex items-center space-x-4">
           {user ? (
             <UserNav user={user} />
           ) : (
-            <Link href="/login">
-              <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white rounded-none text-[10px] tracking-[0.2em] uppercase transition-all px-6">
-                Login
-              </Button>
+            <Link
+              href="/signup"
+              className="text-sm font-medium hover:underline underline-offset-4 tracking-tight"
+            >
+              Iniciar Sesión
             </Link>
           )}
-          <Button className="bg-black text-white hover:bg-black/90 rounded-none text-[10px] tracking-[0.2em] uppercase transition-all px-6 hidden sm:inline-flex">
-            Book a Viewing
-          </Button>
         </div>
       </div>
     </header>
-  )
+  );
 }
