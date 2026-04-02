@@ -1,9 +1,10 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { UserNav } from "./user-nav"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,42 +15,27 @@ import {
 import { UserNav } from "./user-nav";
 
 const navItems = [
-  { name: "Hogar", href: "/" },
-  { name: "Propiedades", href: "/properties" },
-  { name: "Acerca de", href: "/about" },
-];
+  { name: "Properties", href: "/properties" },
+  { name: "Agents", href: "/agents" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+]
 
 interface HeaderProps {
-  user: any; 
+  user?: any // Type as Supabase user or specific user interface
 }
 
 export function Header({ user }: HeaderProps) {
-  const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-
-  // Evita errores de hidratación y el fallo de 'removeChild'
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Renderizado inicial simplificado para sincronizar servidor y cliente
-  if (!mounted) {
-    return (
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="font-serif text-2xl font-bold">LUJO</div>
-        </div>
-      </header>
-    );
-  }
+  const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="font-serif text-2xl font-bold">
-            LUJO
-          </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center space-x-2">
+          <span className="font-serif text-2xl font-semibold tracking-widest uppercase">
+            Luxe
+          </span>
+        </Link>
 
           <NavigationMenu>
             <NavigationMenuList>
@@ -60,8 +46,8 @@ export function Header({ user }: HeaderProps) {
                       href={item.href}
                       className={cn(
                         navigationMenuTriggerStyle(),
-                        "bg-transparent font-sans text-sm tracking-widest uppercase hover:bg-transparent transition-colors",
-                        pathname === item.href ? "text-accent font-bold" : "text-muted-foreground hover:text-primary"
+                        "bg-transparent font-sans text-sm tracking-widest uppercase hover:bg-transparent hover:text-accent transition-colors",
+                        pathname === item.href && "text-accent"
                       )}
                     >
                       {item.name}
@@ -77,11 +63,10 @@ export function Header({ user }: HeaderProps) {
           {user ? (
             <UserNav user={user} />
           ) : (
-            <Link
-              href="/signup"
-              className="text-sm font-medium hover:underline underline-offset-4 tracking-tight"
-            >
-              Iniciar Sesión
+            <Link href="/login">
+              <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white rounded-none text-[10px] tracking-[0.2em] uppercase transition-all px-6">
+                Login
+              </Button>
             </Link>
           )}
         </div>
